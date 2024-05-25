@@ -7,6 +7,11 @@ public class PlayerMovement : MonoBehaviour
 
     public float speed;
     public Rigidbody2D body;
+    [Range(0f, 1f)] // Adds a slider to control this property in Unity Inspector
+    public float groundDecay;
+    public bool isGrounded;
+    public BoxCollider2D groundCheck;
+    public LayerMask groundMask;
 
     // Start is called before the first frame update
     void Start()
@@ -39,5 +44,22 @@ public class PlayerMovement : MonoBehaviour
         {
             body.velocity = new Vector2(body.velocity.x, yInput * speed);
         }
+    }
+
+    // FixedUpdate is called with the same time between each interval
+    void FixedUpdate()
+    {
+        CheckGround();
+
+        if (isGrounded)
+        {
+            body.velocity *= groundDecay;
+        }
+    }
+
+    void CheckGround()
+    {
+        // TODO: What does this line do?
+        isGrounded = Physics2D.OverlapAreaAll(groundCheck.bounds.min, groundCheck.bounds.max, groundMask).Length > 0;
     }
 }
