@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
 
-    public float speed;
+    public float groundSpeed;
+    public float jumpSpeed;
     public Rigidbody2D body;
     [Range(0f, 1f)] // Adds a slider to control this property in Unity Inspector
     public float groundDecay;
@@ -51,10 +52,14 @@ public class PlayerMovement : MonoBehaviour
         if (Mathf.Abs(xInput) > 0)
         {
             /*
-         * Vector is just a object that has magnitude and direction https://mathinsight.org/vector_introduction
-         * Vector2 is a Unity object / class. That's why we create a new one and assign it to a property of the body
-         */
-            body.velocity = new Vector2(xInput * speed, body.velocity.y);
+             * Vector is just a object that has magnitude and direction https://mathinsight.org/vector_introduction
+             * Vector2 is a Unity object / class. That's why we create a new one and assign it to a property of the body
+             */
+            body.velocity = new Vector2(xInput * groundSpeed, body.velocity.y);
+
+            // TODO: Look more into this code and understand it. This is how we change the direction of the player.
+            float direction = Mathf.Sign(xInput);
+            transform.localScale = new Vector3(direction, 1, 1);
         }
 
         /*
@@ -64,7 +69,7 @@ public class PlayerMovement : MonoBehaviour
          */
         if (Mathf.Abs(yInput) > 0 && isGrounded)
         {
-            body.velocity = new Vector2(body.velocity.x, 1 * speed);
+            body.velocity = new Vector2(body.velocity.x, 1 * jumpSpeed);
         }
     }
 
