@@ -13,6 +13,10 @@ public class PlayerMovement : MonoBehaviour
     public BoxCollider2D groundCheck;
     public LayerMask groundMask;
 
+    // Does not need public since we do not need to see it in the Unity Inspector or be accessible anywhere else
+    float xInput;
+    float yInput;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -22,10 +26,28 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // https://docs.unity3d.com/ScriptReference/Input.GetAxis.html 
-        float xInput = Input.GetAxis("Horizontal");
-        float yInput = Input.GetAxis("Vertical");
+        GetInput();
+        MovePlayerWithInput();
+    }
 
+    // FixedUpdate is called with the same time between each interval
+    void FixedUpdate()
+    {
+        CheckGround();
+
+        // Hoenstly, the functionality seems no different when I comment ApplyFriction() out. So I hope I did it right lol.
+        ApplyFriction();
+    }
+
+    void GetInput()
+    {
+        // https://docs.unity3d.com/ScriptReference/Input.GetAxis.html 
+        xInput = Input.GetAxis("Horizontal");
+        yInput = Input.GetAxis("Vertical");
+    }
+
+    void MovePlayerWithInput()
+    {
         if (Mathf.Abs(xInput) > 0)
         {
             /*
@@ -40,20 +62,9 @@ public class PlayerMovement : MonoBehaviour
          * So the only axis we want to be effected is the axis the user is trying to control.
          * The axis not being controlled should just match whatever the body's current velocity is for that axis.
          */
-        if (Mathf.Abs(yInput) > 0)
+        if (Mathf.Abs(yInput) > 0 && isGrounded)
         {
-            body.velocity = new Vector2(body.velocity.x, yInput * speed);
-        }
-    }
-
-    // FixedUpdate is called with the same time between each interval
-    void FixedUpdate()
-    {
-        CheckGround();
-
-        if (isGrounded)
-        {
-            body.velocity *= groundDecay;
+            body.velocity = new Vector2(body.velocity.x, 1 * speed);
         }
     }
 
@@ -61,5 +72,17 @@ public class PlayerMovement : MonoBehaviour
     {
         // TODO: What does this line do?
         isGrounded = Physics2D.OverlapAreaAll(groundCheck.bounds.min, groundCheck.bounds.max, groundMask).Length > 0;
+    }
+
+    void ApplyFriction()
+    {
+        bool isNoHorizontalInput = xInput == 0;
+        bool isNoVerticalInput = yInput == 0;
+
+        // We only want to apply the ground decay when the user stop running AKA lets go of the horizontal input.
+        if (isGrounded && isNoHorizontalInput && isNoVerticalInput)
+        {
+            body.velocity *= groundDecay;
+        }
     }
 }
