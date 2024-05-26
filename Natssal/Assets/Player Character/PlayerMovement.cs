@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     public BoxCollider2D groundCheck;
     public LayerMask groundMask;
     public Rigidbody2D body;
+
+    public Animator animator;
 
     public bool isGrounded;
 
@@ -54,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleHorizontalMovement()
     {
+        float animatorSpeed = 0;
         /*
         * Input.GetAxis returns a number different than zero if the user is giving an input.
         * So the only axis we want to be effected is the axis the user is trying to control.
@@ -66,6 +70,8 @@ public class PlayerMovement : MonoBehaviour
             // First argument must stay in between the second and third argument
             float newSpeed = Mathf.Clamp(body.velocity.x + increment, -maxSpeed, maxSpeed);
 
+            animatorSpeed = Mathf.Abs(newSpeed);
+
             /*
              * Vector is just a object that has magnitude and direction https://mathinsight.org/vector_introduction
              * Vector2 is a Unity object / class. That's why we create a new one and assign it to a property of the body
@@ -74,6 +80,8 @@ public class PlayerMovement : MonoBehaviour
 
             UpdateDirection();
         }
+
+        animator.SetFloat("Speed", animatorSpeed);
     }
 
     void UpdateDirection()
@@ -89,6 +97,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             body.velocity = new Vector2(body.velocity.x, jumpSpeed);
+            animator.SetBool("isJumping", true);
         }
     }
 
@@ -104,6 +113,16 @@ public class PlayerMovement : MonoBehaviour
          * We get an array of colliders as a return value.
          */
         isGrounded = Physics2D.OverlapAreaAll(groundCheck.bounds.min, groundCheck.bounds.max, groundMask).Length > 0;
+
+        /*
+         * TODO: Understand why we need the body.velocity.y check. Without it, isJumping gets set to true then back to false instantly.
+         * I am pretty sure it has to do when isGround and isJumping gets updated. I'm thinking that the frame
+         * isJumping gets set to true, isGrounded is also still true. But somehow velocity y is already increased. But how is that the case?
+         */
+        if (isGrounded && animator.GetBool("isJumping") && (body.velocity.y < 0.1))
+        {
+            animator.SetBool("isJumping", false);
+        }
     }
 
     void ApplyFriction()
@@ -117,4 +136,6 @@ public class PlayerMovement : MonoBehaviour
             body.velocity *= groundDecay;
         }
     }
+
+    // TODO: velocity y is negative when falling
 }

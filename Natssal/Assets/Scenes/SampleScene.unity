@@ -283,6 +283,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   body: {fileID: 490509553}
+  animator: {fileID: 500925821}
   isGrounded: 0
 --- !u!1 &500925818
 GameObject:
@@ -862,7 +863,7 @@ Transform:
   m_GameObject: {fileID: 2068317605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 1.68, y: -2.29, z: 0}
+  m_LocalPosition: {x: 3.32, y: -2.29, z: 0}
   m_LocalScale: {x: 1.9811, y: 6.810031, z: 1.9811}
   m_ConstrainProportionsScale: 0
   m_Children:
