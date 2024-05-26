@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Range(0f, 1f)] // Adds a slider to control this property in Unity Inspector
+    // Adds a slider to control this property in Unity Inspector
+    [Range(0f, 1f)]
     public float groundDecay;
     public float acceleration; 
     public float maxSpeed;
@@ -14,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
     public BoxCollider2D groundCheck;
     public LayerMask groundMask;
     public Rigidbody2D body;
-   
+
     public bool isGrounded;
 
     // Does not need public since we do not need to see it in the Unity Inspector or be accessible anywhere else
